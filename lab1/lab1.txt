@@ -1,0 +1,4 @@
+Ex.3 
+ a) 1/2000=0.0005s = 0.5ms.
+ b) O ora de achizitie la 2000Hz inseamna 2000*3600=7.200.000 esantioane, 
+    care ocupa 1/2 B fiecare =>in total, ele ocupa 3.600.000 milioane B ~ 3,43 MB.
