@@ -1,0 +1,6 @@
+Avem ca 10 log_10 (P_semnal / P_zgomot) = 80 dB,
+de unde P_semnal / P_zgomot = 10 ^ 8, si putem calcula puterea zgomotului:
+
+R_zgomot = 10log_10(P_zgomot / P_0) dB =
+= 10log_10(P_zgomot/P_semnal * P_semnal/P_0 ) dB  =
+= 10 (-8 + 9) = 10 dB. (deoarece ln(ab) = ln(a) + ln(b), pt orice a si b)
