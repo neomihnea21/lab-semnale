@@ -1,6 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 import pandas as pd
+import copy
 # a) - Frecventa de esantionare este de 1/h, sau 1/3600 Hz.
 # b) - Esantioanele sunt sortate, primul este de pe 25-08-2012, al doilea de pe 25-09-2014, asa ca au fost obtinute in 25 de luni.
 
@@ -15,6 +16,7 @@ data =  np.array(data["Count"]) # nu ne pasa de id-uri si timestampul de achizit
 
 N = len(data)
 transform = np.fft.fft(data[:16384])
+orig_transform = copy.deepcopy(transform)
 transform = np.abs(transform/N)
 
 
@@ -58,9 +60,9 @@ plt.savefig("g.pdf")
 
 plt.clf()
 for i in range(0, 1024):
-    transform[i] = 0
-    transform[16383-i] = 0
+    orig_transform[i] = 0
+    orig_transform[16383-i] = 0
 time = np.linspace(0, 16384, 16384)
-filtered_signal = np.fft.ifft(transform)
+filtered_signal = np.fft.ifft(orig_transform)
 plt.plot(time, np.abs(filtered_signal))
 plt.savefig("i.pdf")
