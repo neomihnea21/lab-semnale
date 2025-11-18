@@ -10,12 +10,12 @@ signal = df["Count"][:72]
 W = 15
 filtered_signal = np.convolve(signal, np.ones(W), 'valid') / W
 plt.plot(filtered_signal)
-plt.show()
+plt.savefig("simple_conv.pdf")
 
 # c)
 # Semnalul este esantionat cu frecventa de 1/3600 Hz (1/ora)
 # De aici, nu putem determina "strict" frecventa Nyquist, dar, presupunand ca semnalul este esantionat corect,
-# ne putem da seama ca nu exista frecvente mai mari de 1/7200 Hz. Vom considera valoarea asta pt Nyquist.
+# ne putem da seama ca nu exista frecvente mai mari de 1/7200 Hz. Vom considera valoarea asta pentru Nyquist.
 # Vom filtra toate componentele cu frecventa mai mare de 1/21600 Hz. (deoarece sunt variabilitate restransa in cadrul unei saptamani)
 # In atari conditii, frecventa relativa este 1/3.
 
@@ -36,7 +36,7 @@ axs[0].plot(np.arange(len(filtered_signal_butter)), filtered_signal_butter)
 axs[2].plot(np.arange(len(filtered_signal_cebisev)), filtered_signal_cebisev)
 axs[1].plot(signal)
 axs[3].plot(signal)
-plt.show()
+plt.savefig("ex6-butter.pdf")
 #As alege Butterworth, pentru ca este mai aproape de un trece-jos pur.
 
 #f)
@@ -55,4 +55,4 @@ for i in range(3):
         cheby = scipy.signal.cheby1(orders[i], zetas[j], cutoff, 'lowpass', fs=1/3600)
         filtered_cheby = scipy.signal.filtfilt(*cheby, signal)
         axs[3*j+i+3].plot(np.arange(len(filtered_cheby)), filtered_cheby)
-plt.show()
+plt.savefig("ex6-many-filters.pdf")
