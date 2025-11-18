@@ -9,7 +9,7 @@ times.append(np.linspace(-3, 3, 13))
 times.append(np.linspace(-3, 3, 25))
 
 
-B = 1
+B = 0.6
 
 def rebuilt_sinc(valued_samples, samples, t, period):
     sinc_arg = (t - samples) / period
@@ -23,6 +23,6 @@ for i in range(4):
     axs[i].plot(base_time, np.array([(np.sinc(B*t)**2) for t in base_time]), color='#e7fa00')
     axs[i].stem(times[i], np.array([(np.sinc(B*t)**2) for t  in times[i]]))
     axs[i].plot(base_time, np.array([rebuilt_sinc(valued_points, points, dt, period) for dt in base_time]), 'm--')
-plt.savefig("ex1.pdf")
+plt.savefig("ex1_B=0.6.pdf")
 
 
