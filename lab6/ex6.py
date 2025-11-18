@@ -10,6 +10,8 @@ signal = df["Count"][:72]
 W = 15
 filtered_signal = np.convolve(signal, np.ones(W), 'valid') / W
 plt.plot(filtered_signal)
+plt.xlabel("Timp")
+plt.ylabel("Amplitudine")
 plt.savefig("simple_conv.pdf")
 
 # c)
@@ -35,7 +37,11 @@ fig, axs = plt.subplots(4)
 axs[0].plot(np.arange(len(filtered_signal_butter)), filtered_signal_butter)
 axs[2].plot(np.arange(len(filtered_signal_cebisev)), filtered_signal_cebisev)
 axs[1].plot(signal)
+axs[1].set_title("Semnal original")
 axs[3].plot(signal)
+axs[3].set_title("Semnal original")
+plt.ylabel("Amplitudini")
+plt.xlabel("Timpi")
 plt.savefig("ex6-butter.pdf")
 #As alege Butterworth, pentru ca este mai aproape de un trece-jos pur.
 
@@ -55,4 +61,6 @@ for i in range(3):
         cheby = scipy.signal.cheby1(orders[i], zetas[j], cutoff, 'lowpass', fs=1/3600)
         filtered_cheby = scipy.signal.filtfilt(*cheby, signal)
         axs[3*j+i+3].plot(np.arange(len(filtered_cheby)), filtered_cheby)
+        axs[3*j+i+3].set_xlabel("Timp")
+        axs[3*j+i+3].set_ylabel("Semnal filtrat")
 plt.savefig("ex6-many-filters.pdf")
