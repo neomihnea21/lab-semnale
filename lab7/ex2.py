@@ -11,11 +11,10 @@ img = data.face(gray=True)
 img_stash = copy.deepcopy(img)
 
 img_freq = np.fft.fft2(img)
-signal_power = np.log10(img_freq)
+dead_image = np.log10(img_freq)
 
 cutoff = 120
 img_freq_copy  = copy.deepcopy(img_freq)
-ing_freq_
 img = np.fft.ifft2(img_freq)
 plt.imshow(np.log10(np.abs(img)), cmap=plt.cm.gray)
 plt.colorbar()
