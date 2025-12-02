@@ -71,33 +71,30 @@ def predict(series, m, p):
     Y = np.zeros((m, p))
     for i in range(m):
         for j in range(p):
-            Y[i][j]=series[i+j]
+            Y[i][j]=series[(i+j)%N]
     #ne va trebui un semnal de dimensiune m cand aplicam Yule-Walker
     #asa ca ne taiem o bucata potrivita
     snippet=np.take(series, np.arange(p, p+m), mode='wrap')
     snippet = np.reshape(snippet, (-1, 1))
     Gamma = Y.T @ Y
     gamma = np.matmul(Y.T, snippet)
-    ans = np.linalg.solve(Gamma, gamma)
-    return ans
+    ans = np.matmul(np.linalg.inv(Gamma), gamma)
+    err = 0
+    for i in range(m, m+p):
+        err += (ans[i-m][0] - series [i%N]) ** 2 
+    return ans, err/N
 
-#vom calcula calitatea unei predictii folosind MSE
-def error(y_hat, y):
-    N = len(y)
-    print(np.shape(y_hat))
-    sum=0
-    for i in range(N):
-        sum += (y_hat[i]-y[i])**2
-    return sum / N
 
 min_err = 1e12 # sau altceva foarte mare
 min_p = 0
 min_m = 0
+# bucata asta e nebun de alb, captureaza CPU-ul pentru vesnicie
+# probabil merge un soi de gradient descent? functia pare derivabila
 for p in range(N):
     for m in range(N, N-p, -1):
-        y_hat = predict(y, m, p)
-        if error(y, y_hat) < min_err:
-            min_err = error(y_hat, y)
+        y_hat, err = predict(y, m, p)
+        if err < min_err:
+            min_err = err
             min_p=p
             min_m=m
 print(f"Eroarea minima se obtine pentru p={min_p} si m={min_m}")
