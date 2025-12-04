@@ -28,20 +28,29 @@ def encode_layer(image):
 
 def encode(image: np.array):
     if image.ndim > 2:
-        image = np.swapaxes(image, 0, 2)
-        image = np.swapaxes(image, 1, 2)
-        image=util.RGB_to_YCbCr(image)
-        
-        image = np.copy(image)
+        y, Cb, Cr=util.RGB_to_YCbCr(image)
+        Cb += 128
+        Cr += 128
+        image[:, :, 0] = y
+        image[:, :, 1] = Cb
+        image[:, :, 2] = Cr
+        image = np.copy(image) 
         for i in range(3):
             image[i] = encode_layer(image[i])
+        
     else:
         image = encode_layer(image) # there's a single layer, if we're in grayscale
     return image
 
+def decode(image):
+    if image.ndim > 2:
+        image=util.YCbCr_to_RGB(image)
+
+
 buildings = datasets.ascent()
 print(np.shape(buildings))
 image = encode(buildings)
+image = decode(image)
 image=image.astype(np.float32)
 plt.imshow(image, cmap=plt.cm.gray)
 plt.show()
