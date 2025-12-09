@@ -11,14 +11,19 @@ YCBCR = np.array([
 
 
 def RGB_to_YCbCr(image):
-   image /= MAX_COLOR # normalization
+   # suntem obligati sa facem asta, pentru ca parametrul este vazut ca read-only
+   # vor mai fi o multime de copii pe aici
+   image  = image.copy()
+   image = (image/MAX_COLOR).astype(np.float64) # normalization
    ycbcr_image = image @ YCBCR.T
    Y_layer, Cb_layer, Cr_layer = np.split(ycbcr_image, 3, axis=-1)
    return np.round(Y_layer.squeeze()*MAX_COLOR-128), np.round(Cb_layer.squeeze()*MAX_COLOR), np.round(Cr_layer.squeeze()*MAX_COLOR)
 
 def YCbCr_to_RGB(image):
-   image[:, :, 0] += 128
-   image /= 255
-   RGB_normalized = image @ np.linalg.inv(YCBCR).T
+   YCbCr_norm = image.astype(np.float64)
+   YCbCr_norm[:, :, 0] += 128
+   YCbCr_norm /= 255
+   RGB_normalized = YCbCr_norm @ np.linalg.inv(YCBCR).T
    RGB_real = np.round(RGB_normalized*MAX_COLOR).astype(np.uint8)
    return RGB_real
+
