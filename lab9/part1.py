@@ -54,7 +54,7 @@ def triple_exponential(alpha, beta, gamma, m, L):
         if t<L:
             c[t] = 0
         else:
-            c[t] = gamma * y[t]/s[t] + (1-gamma) 
+            c[t%L] = gamma * y[t]/s[t] + (1-gamma) * c[t%L] 
     for i in range(N):
         if i<m:
           y_hat[i]=0
@@ -82,7 +82,7 @@ def optimize_2D(iter):
        beta = best_beta
        for i in range(-5, 6):
            for j in range(-5, 6):
-               series = double_exponential(alpha+i*step, beta+j*step)
+               series = double_exponential(alpha+i*step, beta+j*step, 5)
                if series_error(series, y) < best_error:
                    best_alpha = alpha + i*step
                    best_beta = beta + j*step
@@ -105,13 +105,15 @@ def optimize_3D(iter):
        gamma = best_gamma
        for i in range(-2, 3):
            for j in range(-2, 3):
-               series = triple_exponential(alpha+i*step, beta+j*step, gamma)
-               if series_error(series, y) < best_error:
-                   best_alpha = alpha + i*step
-                   best_beta = beta + j*step
-                   best_error = series_error(series, y)
+               for k in range(-2, 3):
+                series = triple_exponential(alpha+i*step, beta+j*step, gamma+k*step, 5, 10)
+                if series_error(series, y) < best_error:
+                    best_alpha = alpha + i*step
+                    best_beta = beta + j*step
+                    best_gamma = gamma + k*step 
+                    best_error = series_error(series, y)
        step /= 10
-    return best_alpha, best_beta, best_error
+    return best_alpha, best_beta, best_gamma, best_error
 
 best_alpha=0
 best_error=1e29
