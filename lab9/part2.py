@@ -16,38 +16,44 @@ noise = np.random.normal(0, 5, N)
 y = trend + season + noise
 
 # 3
-def get_moving_average(coefs, y, q):
+def get_moving_average(y, q):
     y_hat=np.zeros(N)
+    mus = []
+    eps = []
     for i in range(N):
         if i<q:
             y_hat[i] = y[i] 
         else:
             mu = np.mean(y[i-q:i])
             epsilon = y[i-q:i] - mu
-
-            # trebuie sa gasim noii coeficienti, si rezolvam o problema least-squares
-            # asa ca, pe moment, vom veni cu ei din afara
-            y_hat[i] = np.dot(coefs, epsilon) + mu
+            mus.append(mu)
+            eps.append(epsilon)
+    coefs, _, _, _= np.linalg.lstsq(eps, mus)
+    ans = eps @ coefs
+    for i in range(q, N):
+        y_hat[i] = ans [i-q] + mus [i-q]
     return y_hat
 
 
 Q = 4
 
 plt.plot(y, label='Actual')
-plt.plot(get_moving_average(np.ones(Q), y, Q), label='Predicted')
+plt.plot(get_moving_average(y, Q), label='Predicted')
 plt.legend()
-plt.savefig("3.pdf")
+plt.savefig("3b.pdf")
+
+plt.clf()
 #4
 
 plt.clf()
 best_p = 0
 best_q = 0
 best_error = 1e12
-MAX_HORIZON = 5
+MAX_HORIZON = 20
 
-# nu putem testa 400 de combinatii de P si Q, dureaza prea mult. In acest exemplu, vom testa 25, dar se extinde 
-for p in range(MAX_HORIZON):
-    for q in range(MAX_HORIZON):
+# nu putem testa 400 de combinatii de P si Q, dureaza prea mult. In acest exemplu, vom testa 16, dar se extinde 
+for p in range(0, MAX_HORIZON, 5):
+    for q in range(0, MAX_HORIZON, 5):
         model = statsmodels.tsa.arima.model.ARIMA(y, order=(p, 0, q))
         fitted_model = model.fit()
         error = fitted_model.aic
