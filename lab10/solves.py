@@ -33,13 +33,41 @@ results = model.fit()
 # 3 
 # setup pentru regularizarea cu OMP / L1
 x = results.params[1:]
-Y = np.zeros(m, p)
+Y = np.zeros((m, p))
 for i in range(m):
     for j in range(p):
-        Y[i, j] = y[N-i-j]
+        Y[i, j] = y[N-i-j-1]
 
-def l0_reg(y, Y):
-   return reg.l1regls(Y, x)
+def MSE(a, b):
+    return np.mean((a-b)**2)
+# aici in biblioteca nu exista lambda
+def l1_reg(y, Y):
+   return reg.l1regls(Y, y)
+
+def greedy_reg(y, Y, regs=4):
+
+    features = np.shape(Y)[0]
+    curr_regressors = []
+    test_regressors = []
+    best_error = 1e9
+    for _ in range(regs):
+       best_i = -1
+       for i in range(features):
+           if i not in curr_regressors:
+               test_regressors = curr_regressors + [i]
+               atoms = Y[test_regressors, :] # the term is borrowed from dictionary learning, since it's he same idea as OMP
+               coefs, _, _, _ = np.linalg.lstsq(atoms, y)
+               pred = atoms @ coefs
+               error = MSE(pred, y)
+               if error < best_error:
+                   best_error = error
+                   best_i = i
+       # trick: if 2 regressors do better than 3, we don't bother picking a 3rd
+       if best_i != -1:
+          curr_regressors += [best_i]       
+           # evaluate the current set of regressors
+    return np.array(curr_regressors)
+
 #5
 def check_stationary(params):
     roots = get_roots(params)
@@ -48,4 +76,5 @@ def check_stationary(params):
         if np.abs(root) < 1:
             is_stationary = False
     return is_stationary
+
 print(check_stationary(x))
