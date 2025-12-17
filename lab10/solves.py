@@ -33,20 +33,23 @@ results = model.fit()
 # 3 
 # setup pentru regularizarea cu OMP / L1
 x = results.params[1:]
-Y = np.zeros((m, p))
-for i in range(m):
-    for j in range(p):
+Y = np.zeros((p, m))
+for i in range(p):
+    for j in range(m):
         Y[i, j] = y[N-i-j-1]
 
 def MSE(a, b):
     return np.mean((a-b)**2)
 # aici in biblioteca nu exista lambda
 def l1_reg(y, Y):
-   return reg.l1regls(Y, y)
+   # the reg problem is only defined if Ax and b have the same dimension. A m*p A means answer has length p and b hs length m, so we trim m
+   y_end = y[-m :]
+   return reg.l1regls(Y, y_end)
 
 def greedy_reg(y, Y, regs=4):
 
     features = np.shape(Y)[0]
+    pred_length = np.shape(Y)[1]
     curr_regressors = []
     test_regressors = []
     best_error = 1e9
@@ -54,15 +57,18 @@ def greedy_reg(y, Y, regs=4):
        best_i = -1
        for i in range(features):
            if i not in curr_regressors:
+               y_cut = y[-pred_length: ]
                test_regressors = curr_regressors + [i]
-               atoms = Y[test_regressors, :] # the term is borrowed from dictionary learning, since it's he same idea as OMP
-               coefs, _, _, _ = np.linalg.lstsq(atoms, y)
-               pred = atoms @ coefs
-               error = MSE(pred, y)
+               atoms = Y[test_regressors, :] # the term is borrowed from dictionary learning, since it's the same idea as OMP
+               coefs, _, _, _ = np.linalg.lstsq(atoms.T, y_cut)
+               pred = np.zeros(pred_length)
+               for j in range(len(coefs)):
+                   pred += coefs[j]*atoms[j]
+               error = MSE(pred, y_cut)
                if error < best_error:
                    best_error = error
                    best_i = i
-       # trick: if 2 regressors do better than 3, we don't bother picking a 3rd
+       # trick: if 3 regressors cannot beat 2, we don't bother picking a 3rd
        if best_i != -1:
           curr_regressors += [best_i]       
            # evaluate the current set of regressors
@@ -77,4 +83,5 @@ def check_stationary(params):
             is_stationary = False
     return is_stationary
 
+regs = greedy_reg(y, Y)
 print(check_stationary(x))

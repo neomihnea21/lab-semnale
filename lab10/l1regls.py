@@ -1,7 +1,7 @@
 from cvxopt import matrix, spdiag, mul, div, sqrt, normal, setseed
 from cvxopt import blas, lapack, solvers, sparse, spmatrix
 import math
-
+import numpy as np
 try:
     import mosek
     import sys
@@ -134,7 +134,7 @@ def l1regls(A, b):
 
     """
 
-    m, n = A.size
+    m, n = np.shape(A)
     q = matrix(1.0, (2*n,1))
     q[:n] = -2.0 * A.T * b
 
