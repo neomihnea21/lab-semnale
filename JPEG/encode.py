@@ -4,7 +4,7 @@ from scipy.fft import dctn, idctn
 import util, copy
 import matplotlib.pyplot as plt
 
-QUANT = np.array(
+QUANT_BASE = np.array(
          [[16, 11, 10, 16, 24, 40, 51, 61],
           [12, 12, 14, 19, 26, 28, 60, 55],
           [14, 13, 16, 24, 40, 57, 69, 56],
@@ -18,7 +18,8 @@ MAGIC = 8
 
 
 # we clip the right and bottom to ensure we have a whole number of blocks
-def encode_layer(image):
+def encode_layer(image,  quality_factor = 1):
+    QUANT = QUANT_BASE * quality_factor
     w = MAGIC* (np.shape(image)[1] // MAGIC) 
     h = MAGIC* (np.shape(image)[0] // MAGIC)
     canvas = np.zeros((h, w)) 
@@ -41,9 +42,4 @@ def decode_layer(image):
             converted_block = idctn(block)
             canvas[i:i+MAGIC, j:j+MAGIC] = converted_block
     return canvas
-
-
-face = datasets.face(gray=False)
-
-
 
