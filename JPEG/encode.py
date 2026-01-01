@@ -20,6 +20,7 @@ MAGIC = 8
 # we clip the right and bottom to ensure we have a whole number of blocks
 def encode_layer(image,  quality_factor = 1):
     QUANT = QUANT_BASE * quality_factor
+    print(np.shape(image))
     w = MAGIC* (np.shape(image)[1] // MAGIC) 
     h = MAGIC* (np.shape(image)[0] // MAGIC)
     canvas = np.zeros((h, w)) 

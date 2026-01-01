@@ -70,10 +70,8 @@ def encode_huffman(v):
         heapq.heappush(heap_sets, interNode)
     
     #now we have a Huffman Tree, let's commit it to disk - one way or another
-
-    # now, we assign codes to each symbol
-    codes = dict()
-    get_codes(heapq.heappop(heap_sets))
+    final_tree = heapq.heappop(heap_sets)
+    
 
 def save(path, tree):
     with open(path, 'wb') as out:
