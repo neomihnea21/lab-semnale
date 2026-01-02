@@ -51,27 +51,27 @@ def encode_huffman(v):
     # basic preprocessing
     freq=dict()
     for x in v:
-        if x in v:
+        if x in freq:
             freq[x]+=1
         else:
             freq[x]=1
     sets = [HuffmanNode(x, freq[x]) for x in freq]
     n = len(sets)
-    heap_sets = heapq.heapify(sets)
+    heapq.heapify(sets)
     
-    for _ in range(n-1):
-        e1 = heapq.heappop(heap_sets)
-        e2 = heapq.heappop(heap_sets)
+    while(len(sets) > 1):
+        e1 = heapq.heappop(sets)
+        e2 = heapq.heappop(sets)
         # we push a "partial node", which has no symbol
         interNode = HuffmanNode(None, e1.value+e2.value)
         interNode.left = e1
         interNode.right = e2
 
-        heapq.heappush(heap_sets, interNode)
+        heapq.heappush(sets, interNode)
     
     #now we have a Huffman Tree, let's commit it to disk - one way or another
-    final_tree = heapq.heappop(heap_sets)
-    
+    final_tree = heapq.heappop(sets)
+    return final_tree
 
 def save(path, tree):
     with open(path, 'wb') as out:
