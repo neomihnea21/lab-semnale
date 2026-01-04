@@ -83,17 +83,14 @@ def load(path):
     return ans
 
 def decode_huffman(bit_stream, root):
-    index = 0
     ans = []
-    N = len(bit_stream)
-    current_node = root
-    while(index < N):
-        bit = bit_stream[index]
+    current_node = root  
+    for bit in bit_stream:
+        if bit == "0":
+            current_node = current_node.left
+        else:
+            current_node = current_node.right
         if current_node.left is None and current_node.right is None:
             ans.append(current_node.symbol)
-            current_node = root
-        elif bit == "0":
-            current_node = current_node.left
-        elif bit == "1":
-            current_node = current_node.right
+            current_node = root 
     return ans 

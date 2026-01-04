@@ -30,34 +30,20 @@ def disk_save(image_path, quality_factor = 1):
     streams = []
     trees = []
     for k in range(3):
-        canvas = np.zeros_like(coded_image[:, :, k])
-        flat = np.reshape(coded_image[:, :, k], -1)
+        flat = coded_image[:, :, k].flatten()
         tree = huffman.encode_huffman(flat)
         codebook = dict()
         huffman.get_codes(tree, "", codebook)
-        ans = ""
-        for i in range(np.shape(coded_image)[0]):
-            for j in range(np.shape(coded_image)[1]):
-                ans += codebook[coded_image[i, j, k]]
-        streams.append(ans)
+        stream = "".join(codebook[val] for val in flat)
+        streams.append(stream)
         trees.append(tree)
+
     return streams, trees
         # we could have committed to disk, but we won't, for ease of use
 
 def reload_layer(stream, image_shape, tree: huffman.HuffmanNode):
-    rebuilt_numbers = []
-    curr_node = tree
-    for bit in stream:
-        if curr_node.left is None and curr_node.right is None:
-            rebuilt_numbers += [curr_node.symbol]
-            curr_node = tree
-        if bit == "0":
-            curr_node = curr_node.left
-        elif bit == "1":
-            curr_node = curr_node.right
-    # these might not fit, so pad with zeros as needed
+    rebuilt_numbers = huffman.decode_huffman(stream, tree)
     arr = np.array(rebuilt_numbers)
-    arr = np.concatenate((arr, np.zeros(np.prod(image_shape) - len(arr))))
     return np.reshape(arr, image_shape)
 
 #this allows us to compress the blackbird as far as we want
@@ -73,7 +59,7 @@ def ex3_v1(image_path, quality_factor = 1):
         layer = reload_layer(streams[k], shape, trees[k])
         canvas[:, :, k] = layer
     canvas = util.revert_colorised_image(canvas)
-    plt.imsave("img/huffed_blackbird.jpg", canvas)
+    plt.imsave("img/huffed_blackbird_2.jpg", canvas)
 
 def mse(x, y):
     return np.mean((x-y) ** 2)
@@ -96,7 +82,7 @@ def ex3_aux(image_path, quality_factor):
 # implementarea EX3 finala din tema
 def ex3_v2(image_path, MSE_target):
     qual = 0
-    step = 100
+    step = 20
     while(step > 0.01):
         score, _ = ex3_aux(image_path, qual+step)
         if score < MSE_target:
@@ -116,7 +102,8 @@ def ex4(video_path, write_path):
             parsed_frame = (ex2(frame)*255).astype(np.uint8)
             writer.append_data(parsed_frame)
 def main():
-    ex4("videos/mtv.mp4", "videos/mtv-remade.mp4")
+    imag = ex3_v2("img/blackbird.jpg", 14700)
+    plt.imsave("img/saved_blackbird.jpg", imag / 255)
             
 
 if __name__ == "__main__":
