@@ -1,0 +1,3 @@
+[submodule "ice-queen"]
+	path = ice-queen
+	url = https://github.com/neomihnea21/ice-queen

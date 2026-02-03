@@ -60,6 +60,7 @@ def greedy_reg(y, Y, regs=4):
                y_cut = y[-pred_length: ]
                test_regressors = curr_regressors + [i]
                atoms = Y[test_regressors, :] # the term is borrowed from dictionary learning, since it's the same idea as OMP
+               # evaluate the current set of regressors
                coefs, _, _, _ = np.linalg.lstsq(atoms.T, y_cut)
                pred = np.zeros(pred_length)
                for j in range(len(coefs)):
@@ -71,7 +72,6 @@ def greedy_reg(y, Y, regs=4):
        # trick: if 3 regressors cannot beat 2, we don't bother picking a 3rd
        if best_i != -1:
           curr_regressors += [best_i]       
-           # evaluate the current set of regressors
     return np.array(curr_regressors)
 
 #5
